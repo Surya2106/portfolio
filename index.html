@@ -1,14 +1,229 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Surya Teja Pinninti — Senior AI & Backend Engineer. The Neural Orchestrator portfolio." />
-    <title>Surya Teja Pinninti — The Neural Orchestrator</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Surya Teja Pinninti | Senior AI &amp; Backend Engineer</title>
+<meta name="description" content="Senior AI and backend engineer in Hyderabad. LangGraph multi-agent systems with human review, computer-vision pipelines and distributed backends. Ex D.E. Shaw, Tekion, Amazon, Delhivery.">
+<meta property="og:title" content="Surya Teja Pinninti | Senior AI &amp; Backend Engineer">
+<meta property="og:description" content="Live in the future and build what's missing. Agent systems, rebuilt in particles.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#08090c">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&f[]=general-sans@400,500,600&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+</head>
+<body class="booting">
+
+<!-- Loader: the counter follows real asset loading, then the curtain splits -->
+<div class="loader" id="loader">
+  <div class="curtain curtain-l"></div>
+  <div class="curtain curtain-r"></div>
+  <div class="loader-inner">
+    <div class="loader-main">
+      <p class="loader-label">compiling surya.graph</p>
+      <p class="loader-count"><span id="loadNum">00</span><small>%</small></p>
+      <div class="loader-track"><i id="loadBar"></i></div>
+      <div class="gate" id="gate" hidden>
+        <button class="btn btn-solid" id="enterSound" type="button">Enter with sound</button>
+        <button class="btn-text" id="enterQuiet" type="button">Enter quietly</button>
+      </div>
+    </div>
+    <ol class="loader-log" id="loadLog">
+      <li data-at="0.06">ai estimation platform <b>−60% manual effort</b></li>
+      <li data-at="0.24">structural drawings <b>~80 of 90 at 95%+</b></li>
+      <li data-at="0.44">d.e. shaw qa assistant <b>−45% response time</b></li>
+      <li data-at="0.62">tekion integrations <b>1 month → 3 days</b></li>
+      <li data-at="0.8">amazon buyer risk <b>+16% automation</b></li>
+      <li data-at="0.96">igniting <span class="pcount">24,000</span> particles</li>
+    </ol>
+  </div>
+</div>
+<div class="flare" id="flare" aria-hidden="true"></div>
+<div class="scrollbar" aria-hidden="true"><i id="scrollbar"></i></div>
+
+<canvas id="stage" aria-hidden="true"></canvas>
+<div class="shade" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+
+<header class="topbar" id="topbar">
+  <a href="#intro" class="mark" aria-label="Back to top"><span class="mark-dot" aria-hidden="true"></span>Surya</a>
+  <nav aria-label="Primary">
+    <a href="#work-estimation">Work</a>
+    <a href="#journey">Experience</a>
+    <button class="sound" id="sound" type="button" aria-pressed="false"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><span class="sound-label">Sound off</span></button>
+    <a href="#contact" class="topbar-cta">Get in touch</a>
+  </nav>
+</header>
+
+<nav class="index" aria-label="Chapters">
+  <a href="#intro"><span>Intro</span></a>
+  <a href="#work-estimation"><span>Estimation AI</span></a>
+  <a href="#work-drawings"><span>Drawings → Rebar</span></a>
+  <a href="#work-desk"><span>D.E. Shaw</span></a>
+  <a href="#work-tekion"><span>Tekion</span></a>
+  <a href="#work-amazon"><span>Amazon</span></a>
+  <a href="#journey"><span>Journey</span></a>
+  <a href="#contact"><span>Contact</span></a>
+</nav>
+
+<main>
+  <!-- 0 · the name, in particles -->
+  <section class="chapter hero" id="intro" data-scene="0" aria-labelledby="hero-h">
+    <div class="hero-copy">
+      <p class="eyebrow decode">Senior AI &amp; Backend Engineer · Hyderabad</p>
+      <h1 id="hero-h" class="words">Live in the <em>future</em>, and build what's <em>missing</em>.</h1>
+      <p class="lede">Six years of backend and AI systems at Amazon, Tekion and D.E. Shaw, now building agent platforms that read messy documents and stop for a human when they should. Every dot here is one of <span class="pcount">24,000</span> particles. Scroll and they rebuild the work.</p>
+      <div class="ctas">
+        <a class="btn btn-solid pull" href="#work-estimation">See the work</a>
+        <a class="btn btn-line pull" href="#contact">Get in touch</a>
+      </div>
+    </div>
+    <p class="hint" aria-hidden="true"><span class="hint-mouse">Move your cursor through the name</span><span class="hint-touch">Swipe sideways across the name</span></p>
+  </section>
+
+  <!-- 1 · AI estimation: a solar array -->
+  <section class="chapter work" id="work-estimation" data-scene="1" data-side="left" aria-labelledby="est-h">
+    <article class="card">
+      <p class="kicker decode">Multi-agent AI · LangGraph · InfiSwift AI</p>
+      <h2 id="est-h" class="words">An AI estimation platform for solar</h2>
+      <p>Those particles are a solar array. The platform turns a Japanese solar energy company's PDFs, spreadsheets, CSVs and emails into validated cost estimates. An agent graph does the reading, pricing and shipping maths, and stops for a person whenever a value isn't grounded in the source.</p>
+      <ol class="flow" aria-label="The estimation graph, in order">
+        <li>Ingest</li><li>Extract</li><li>Normalise</li><li>Price tiers</li><li>Shipping rules</li><li class="hitl">Human review</li><li>Validate</li><li>Estimate</li>
+      </ol>
+      <ul class="tags">
+        <li><b>−60%</b> manual effort</li><li><b>+35%</b> data accuracy</li><li><b>3×</b> ingestion</li><li><b>−40%</b> shipping errors</li><li><b>48+</b> expert rules</li>
+      </ul>
+      <p class="stack">LangGraph · GPT-4o + Pydantic · Vertex AI Matching Engine · FastAPI · AWS SQS · MySQL checkpoints</p>
+      <button class="open-trace" type="button" data-trace="estimation">Open the full trace <span aria-hidden="true">↗</span></button>
+    </article>
+  </section>
+
+  <!-- 2 · structural drawings: a column's rebar cage -->
+  <section class="chapter work" id="work-drawings" data-scene="2" data-side="right" aria-labelledby="sd-h">
+    <article class="card">
+      <p class="kicker decode">Computer vision · 30+ node pipeline · InfiSwift AI</p>
+      <h2 id="sd-h" class="words">Structural Drawing Digitization Platform</h2>
+      <p>That's a column's rebar cage: the long bars and the ties around them. The platform reads multi-level structural drawing PDFs and works out the cage for every column and footing, then produces the schedules, location plans, 3D models and clash checks a site team needs.</p>
+      <dl class="stats6">
+        <div><dt>Client projects</dt><dd data-count="90">0</dd></div>
+        <div><dt>Projects at 95%+</dt><dd>~<span data-count="80">0</span></dd></div>
+        <div><dt>Accuracy on those</dt><dd data-count="95" data-suffix="%+">0</dd></div>
+        <div><dt>Pipeline nodes</dt><dd data-count="30" data-suffix="+">0</dd></div>
+        <div><dt>Vision models</dt><dd data-count="6">0</dd></div>
+        <div><dt>Building levels</dt><dd>up to <span data-count="14">0</span></dd></div>
+      </dl>
+      <ul class="tags">
+        <li>Production-ready rebar schedules</li><li>3D models</li><li>Clash detection</li><li><b>130+</b> RFI issue types</li>
+      </ul>
+      <p class="stack">LangGraph · Gemini table extraction · SQS → EC2 CPU/GPU workers · Redis + Celery · S3 · CodeDeploy</p>
+      <button class="open-trace" type="button" data-trace="drawings">Open the full trace <span aria-hidden="true">↗</span></button>
+    </article>
+  </section>
+
+  <!-- 3 · D.E. Shaw: three knowledge sources feeding one answer -->
+  <section class="chapter work" id="work-desk" data-scene="3" data-side="left" aria-labelledby="desk-h">
+    <article class="card">
+      <p class="kicker decode">Retrieval · Internal AI · D.E. Shaw India</p>
+      <h2 id="desk-h" class="words">An AI QA assistant for a trading systems team</h2>
+      <p>Three clouds, one answer. The assistant searched thousands of Confluence pages, internal tickets and Slack threads, answered with its sources, and got better from every piece of feedback through offline evals and prompt regression tests.</p>
+      <ul class="sources" aria-label="Knowledge sources">
+        <li><i class="s1"></i>Confluence</li><li><i class="s2"></i>Tickets</li><li><i class="s3"></i>Slack</li>
+      </ul>
+      <ul class="tags">
+        <li><b>−40%</b> repeat questions</li><li><b>−45%</b> response latency</li><li><b>+25%</b> relevant answers</li><li><b>−30%</b> debugging time</li>
+      </ul>
+      <button class="open-trace" type="button" data-trace="desk">Open the full trace <span aria-hidden="true">↗</span></button>
+    </article>
+  </section>
+
+  <!-- 4 · Tekion: a DMS core with four OEMs in orbit -->
+  <section class="chapter work" id="work-tekion" data-scene="4" data-side="right" aria-labelledby="tek-h">
+    <article class="card">
+      <p class="kicker decode">Integrations · Microservices · Tekion</p>
+      <h2 id="tek-h" class="words">Breaking up the monolith</h2>
+      <p>The core is the dealer management system. The four bodies around it are the OEMs I led onto it: BMW Canada, Mercedes-Benz Canada, Porsche Global and Fleetbox. Splitting the integration layer into microservices is what made that pace possible.</p>
+      <dl class="deltas">
+        <div><dt>Integration time</dt><dd><s>1 month</s><span>3 days</span></dd></div>
+        <div><dt>API latency</dt><dd><s>3 s</s><span>~1 ms</span></dd></div>
+        <div><dt>Repair-order errors</dt><dd><s>10%</s><span>0.2%</span></dd></div>
+      </dl>
+      <ul class="tags"><li>Best Developer of the Quarter</li><li>Mentored 2 engineers</li></ul>
+      <button class="open-trace" type="button" data-trace="tekion">Open the full trace <span aria-hidden="true">↗</span></button>
+    </article>
+  </section>
+
+  <!-- 5 · Amazon: a shield -->
+  <section class="chapter work" id="work-amazon" data-scene="5" data-side="left" aria-labelledby="amz-h">
+    <article class="card">
+      <p class="kicker decode">Fraud · Buyer Risk · Amazon</p>
+      <h2 id="amz-h" class="words">Automating fraud checks at peak scale</h2>
+      <p>A shield, because that was the job. I migrated the Buyer Risk service from V1 to V2 and built feature-generation APIs that took manual fraud investigations off people's desks, then owned the Black Friday and Cyber Monday peak with no incidents.</p>
+      <div class="regions" aria-label="Automation lift by marketplace">
+        <div><span>NA</span><i style="--w:100%"></i><b>+5.38%</b></div>
+        <div><span>EU</span><i style="--w:39%"></i><b>+2.09%</b></div>
+        <div><span>FE</span><i style="--w:8%"></i><b>+0.43%</b></div>
+      </div>
+      <ul class="tags">
+        <li><b>~16%</b> more automated investigations</li><li><b>−40%</b> tickets</li><li><b>~$5K</b>/month saved</li><li><b>30+</b> interviews taken</li>
+      </ul>
+      <button class="open-trace" type="button" data-trace="amazon">Open the full trace <span aria-hidden="true">↗</span></button>
+    </article>
+  </section>
+
+  <!-- 6 · journey: a helix through five companies -->
+  <section class="chapter journey" id="journey" data-scene="6" aria-labelledby="journey-h">
+    <h2 id="journey-h" class="huge words">Six years, five systems</h2>
+    <p class="lede">The helix is the path: one bright node per team, each building on the last.</p>
+    <div class="timeline">
+      <svg class="tl-line" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 2 100"><line x1="1" y1="0" x2="1" y2="100"/></svg>
+      <div class="role now"><time>Nov 2025 – Present</time><h3>Senior AI Engineer · Freelance</h3><p class="org">InfiSwift AI · Remote</p><p>Two platforms, end to end: multi-agent cost estimation for solar, and structural drawings to rebar schedules.</p><p class="role-traces"><button class="role-trace" type="button" data-trace="estimation">Estimation trace <span aria-hidden="true">↗</span></button><button class="role-trace" type="button" data-trace="drawings">Drawings trace <span aria-hidden="true">↗</span></button></p></div>
+      <div class="role"><time>Nov 2024 – Jun 2025</time><h3>Senior Member of Technical Staff</h3><p class="org">D.E. Shaw India · Hyderabad</p><p>Trading systems team. Built the internal AI QA assistant.</p><p class="role-traces"><button class="role-trace" type="button" data-trace="desk">Open trace <span aria-hidden="true">↗</span></button></p></div>
+      <div class="role"><time>Mar 2023 – Nov 2024</time><h3>Software Engineer</h3><p class="org">Tekion · Bengaluru</p><p>Led OEM integrations and the monolith-to-microservices split.</p><p class="role-traces"><button class="role-trace" type="button" data-trace="tekion">Open trace <span aria-hidden="true">↗</span></button></p></div>
+      <div class="role"><time>Jun 2021 – Mar 2023</time><h3>Software Development Engineer</h3><p class="org">Amazon · Bengaluru</p><p>Buyer Risk. Fraud automation and peak-season ownership.</p><p class="role-traces"><button class="role-trace" type="button" data-trace="amazon">Open trace <span aria-hidden="true">↗</span></button></p></div>
+      <div class="role"><time>Sep 2020 – Jun 2021</time><h3>Software Developer</h3><p class="org">Delhivery · Gurgaon</p><p>Warehouse management microservices on Python, Kafka and Celery.</p><p class="role-traces"><button class="role-trace" type="button" data-trace="delhivery">Open trace <span aria-hidden="true">↗</span></button></p></div>
+      <div class="role"><time>2016 – 2020</time><h3>B.Tech, Computer Science</h3><p class="org">ANITS · Visakhapatnam</p><p>ACM-ICPC national finalist twice. President of the ICPC club.</p><p class="role-traces"><button class="role-trace" type="button" data-trace="record">Honours, clubs and education <span aria-hidden="true">↗</span></button></p></div>
+    </div>
+    <div class="ticker" aria-label="Tools I use"><div class="ticker-track">
+      <span>Python</span><span>Java</span><span>C++</span><span>TypeScript</span><span>JavaScript</span><span>React</span><span>Node.js</span><span>Spring Boot</span><span>FastAPI</span><span>Flask</span><span>Django</span><span>LangGraph</span><span>RAG</span><span>Multi-agent workflows</span><span>Human-in-the-loop</span><span>Pydantic structured outputs</span><span>Vertex AI Matching Engine</span><span>AWS</span><span>GCP</span><span>SageMaker</span><span>Lambda</span><span>DynamoDB</span><span>SQS</span><span>MySQL</span><span>PostgreSQL</span><span>MongoDB</span><span>Redis</span><span>Kafka</span><span>Celery</span><span>Docker</span><span>Kubernetes</span><span>HLD</span><span>LLD</span>
+    </div></div>
+  </section>
+
+  <!-- 7 · contact -->
+  <section class="chapter contact" id="contact" data-scene="7" aria-labelledby="contact-h">
+    <div class="contact-inner">
+      <h2 id="contact-h" class="words">Building something that's missing?</h2>
+      <p class="lede">Open to senior AI and backend engineering roles. I also mentor engineers one-on-one on <a href="https://topmate.io/surya_teja_pinninti" target="_blank" rel="noopener">Topmate</a>.</p>
+      <button class="mail pull" type="button" data-email="suryatejapinninti0918@gmail.com">
+        <span class="mail-text">suryatejapinninti0918@gmail.com</span>
+        <span class="mail-tip" aria-live="polite">Click to copy</span>
+      </button>
+      <div class="socials">
+        <a href="https://www.linkedin.com/in/suryatejapinninti" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Surya2106" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://topmate.io/surya_teja_pinninti" target="_blank" rel="noopener">Book a session on Topmate</a>
+      </div>
+    </div>
+    <footer class="foot"><span>Surya Teja Pinninti</span><span>Three.js, GSAP and two shaders. Built from scratch.</span></footer>
+  </section>
+</main>
+
+<!-- Trace view: the full story of one project, opened from a card or the timeline -->
+<div class="trace" id="trace" role="dialog" aria-modal="true" aria-labelledby="trace-title" hidden>
+  <div class="trace-scrim" data-close></div>
+  <div class="trace-progress" aria-hidden="true"><i></i></div>
+  <aside class="trace-panel" tabindex="-1" data-lenis-prevent>
+    
+    <header class="trace-head">
+      <p class="trace-run"><span class="trace-dot" aria-hidden="true"></span><span id="traceRun"></span><span class="trace-status">completed</span></p>
+      <button class="trace-close" type="button" data-close aria-label="Close trace"><kbd>Esc</kbd><span aria-hidden="true">✕</span></button>
+    </header>
+    <div class="trace-body" id="traceBody"></div>
+  </aside>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
 </html>
