@@ -35,7 +35,7 @@ const EASE = "expo.out";
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 
-const COUNT = [9000, 15000, 24000][TIER];
+const COUNT = [12000, 22000, 36000][TIER];
 
 /* ---------------------------------------------------------------------------
    Loader: the counter chases real progress
