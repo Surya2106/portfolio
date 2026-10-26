@@ -107,12 +107,7 @@ main { position: relative; z-index: 2; touch-action: pan-y pinch-zoom; }
 h1 { font: 800 clamp(38px, min(5.2vw, 8vh), 74px)/1 var(--display); letter-spacing: -.03em; text-wrap: balance; }
 h1 em { font-style: normal; color: var(--sun); }
 .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
-.hint { position: absolute; right: calc(var(--gutter) + 60px); bottom: clamp(40px, 7vh, 80px); font: 12px var(--mono); color: var(--faint); }
-.hint-touch { display: none; }
-@media (max-width: 760px) { .hint { display: none; } }
 @media (pointer: coarse) {
-  .hint { display: block; right: auto; left: var(--gutter); bottom: auto; top: calc(env(safe-area-inset-top, 0px) + 84px); }
-  .hint-mouse { display: none; } .hint-touch { display: inline; }
 }
 
 

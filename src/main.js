@@ -36,9 +36,6 @@ const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 
 const COUNT = [9000, 15000, 24000][TIER];
-$$(".pcount").forEach((el) => {
-  el.textContent = COUNT.toLocaleString("en-US");
-});
 
 /* ---------------------------------------------------------------------------
    Loader: the counter chases real progress
@@ -609,7 +606,7 @@ function heroIn() {
       "<.1",
     )
     .from(
-      [".hero .lede", ".hero .ctas", ".hint", ".index"],
+      [".hero .lede", ".hero .ctas", ".index"],
       { opacity: 0, y: 18, duration: 1, stagger: 0.08, ease: EASE },
       "-=.9",
     );
