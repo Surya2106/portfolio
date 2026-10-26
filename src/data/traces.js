@@ -58,11 +58,11 @@ export const TRACES = [
     org: "InfiSwift AI",
     when: "Nov 2025 – Present",
     where: "Remote",
-    summary: "A computer-vision plus LLM platform, used across around 90 client projects, that reads a building's full set of structural drawings and turns it into production-ready reinforcement schedules, a 3D model, location plans and a clash report",
+    summary: "A computer-vision plus LLM platform, used across around 90 client projects, that reads a building's full set of structural drawings and rebuilds it as a complete 3D model of the concrete and steel, with clash checks, location plans and production-ready reinforcement schedules",
     brief: [
       ["The problem", "Before steel can be cut for a building, someone has to read hundreds of structural drawing sheets, find every column, footing, wall and slab, and work out the exact bars inside each one. Every engineering firm draws differently, so this was slow, manual work done by skilled detailers"],
       ["What it reads", "Whole multi-level PDF sets: floor plans, footing and slab plans, column, wall and footing schedules, detail sheets and sections. It sorts each sheet, reads the tables and text, and finds every element on the building's grid, including rotated sheets, angled elements and buildings with two grids"],
-      ["What it produces", "Bar and tie schedules in the manufacturer's production format, marking and location plans for every level, a full 3D model of the concrete and the steel cages inside it, and a clash report between structural elements"],
+      ["What it produces", "A complete 3D model of the whole building, level by level: every column, footing, wall and slab with its openings, stairs, ramps and drops, plus the steel cages inside them, exported for BIM tools as IFC. From that one model come the clash report between structural elements, location and marking plans for every level, and bar and tie schedules in the manufacturer's production format"],
       ["Where people stay in control", "It never guesses. A wrong but plausible value is treated as worse than a missing one, so anything unclear becomes a Request for Information for a reviewer instead of a silent guess. Reviewer answers and manual edits are kept, and the run picks up from where it stopped"],
       ["The result", "Around 80 of 90 client projects reach more than 95% accuracy, on buildings of up to 14 levels"],
     ],
