@@ -35,10 +35,7 @@ const EASE = "expo.out";
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 
-const COUNT = [9000, 15000, 24000][TIER];
-$$(".pcount").forEach((el) => {
-  el.textContent = COUNT.toLocaleString("en-US");
-});
+const COUNT = [12000, 22000, 36000][TIER];
 
 /* ---------------------------------------------------------------------------
    Loader: the counter chases real progress
@@ -609,7 +606,7 @@ function heroIn() {
       "<.1",
     )
     .from(
-      [".hero .lede", ".hero .ctas", ".hint", ".index"],
+      [".hero .lede", ".hero .ctas", ".index"],
       { opacity: 0, y: 18, duration: 1, stagger: 0.08, ease: EASE },
       "-=.9",
     );
@@ -842,7 +839,7 @@ mail.addEventListener("click", async () => {
   const address = mail.dataset.email;
   try {
     await navigator.clipboard.writeText(address);
-    mailTip.textContent = "Copied. Talk soon.";
+    mailTip.textContent = "Copied. Talk soon";
   } catch {
     location.href = `mailto:${address}`;
     mailTip.textContent = "Opening your mail app";

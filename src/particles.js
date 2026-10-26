@@ -270,10 +270,13 @@ export function createStage(canvas, { count, maxPixel, tier, reduce }) {
     pair.b = B;
   }
 
-  // shed resolution, then particles, if the device can't hold ~45 fps
+  // shed resolution, then some particles, only if the device really struggles.
+  // Many laptops cap the browser at 30 fps on battery, so 30 is not "slow".
+  const floor = Math.round(count * 0.7);
   let fpsT = performance.now(),
     fpsN = 0,
     slow = 0;
+  const startedAt = performance.now();
   function adapt() {
     const now = performance.now();
     fpsN++;
@@ -281,17 +284,16 @@ export function createStage(canvas, { count, maxPixel, tier, reduce }) {
     const fps = (fpsN * 1000) / (now - fpsT);
     fpsT = now;
     fpsN = 0;
-    if (document.hidden) return;
-    slow = fps < 45 ? slow + 1 : 0;
-    if (slow < 2) return;
+    if (document.hidden || now - startedAt < 4000) return;
+    slow = fps < 28 ? slow + 1 : 0;
+    if (slow < 3) return;
     slow = 0;
-    if (pixel > 1) {
-      pixel = Math.max(1, pixel - 0.25);
+    if (pixel > 1.25) {
+      pixel = Math.max(1.25, pixel - 0.25);
       resize();
-    } else if (drawCount > 4000) {
-      drawCount = Math.round(drawCount * 0.75);
+    } else if (drawCount > floor) {
+      drawCount = Math.max(floor, Math.round(drawCount * 0.85));
       geo.setDrawRange(0, drawCount);
-      mat.uniforms.uSize.value *= 1.08;
     }
   }
 
