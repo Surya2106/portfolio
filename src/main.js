@@ -839,7 +839,7 @@ mail.addEventListener("click", async () => {
   const address = mail.dataset.email;
   try {
     await navigator.clipboard.writeText(address);
-    mailTip.textContent = "Copied. Talk soon.";
+    mailTip.textContent = "Copied. Talk soon";
   } catch {
     location.href = `mailto:${address}`;
     mailTip.textContent = "Opening your mail app";
