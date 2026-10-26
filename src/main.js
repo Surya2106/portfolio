@@ -124,8 +124,8 @@ const beside = (i, k = 0.21) =>
 const CHAPTERS = [
   {
     tint: "#2a1a08",
-    size: () => Math.min(view.w * (narrow ? 0.9 : 0.6), view.h * 2.2),
-    at: () => [0, view.h * (narrow ? 0.22 : 0.15)],
+    size: () => Math.min(view.w * (narrow ? 0.88 : 0.5), view.h * 1.9),
+    at: () => [0, view.h * (narrow ? 0.34 : 0.29)],
     turn: "face",
   },
   {
@@ -606,7 +606,7 @@ function heroIn() {
       "<.1",
     )
     .from(
-      [".hero .lede", ".hero .ctas", ".index"],
+      [".hero .lede", ".hero .strengths", ".hero .ctas", ".index"],
       { opacity: 0, y: 18, duration: 1, stagger: 0.08, ease: EASE },
       "-=.9",
     );

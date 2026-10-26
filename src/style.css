@@ -103,7 +103,7 @@ main { position: relative; z-index: 2; touch-action: pan-y pinch-zoom; }
 /* CHAPTERS */
 .chapter { position: relative; min-height: 100dvh; padding-inline: var(--gutter); }
 .hero { display: grid; align-content: end; padding-top: 120px; padding-bottom: clamp(40px, 7vh, 80px); }
-.hero-copy { max-width: 800px; display: grid; gap: 20px; }
+.hero-copy { max-width: 860px; display: grid; gap: 20px; }
 h1 { font: 800 clamp(38px, min(5.2vw, 8vh), 74px)/1 var(--display); letter-spacing: -.03em; text-wrap: balance; }
 h1 em { font-style: normal; color: var(--sun); }
 .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
@@ -325,3 +325,9 @@ h1 em { font-style: normal; color: var(--sun); }
 .trace-brief dt { font: 700 17px/1.3 var(--display); color: var(--sun); }
 .trace-brief dd { margin: 0; color: var(--paper); font-size: 15.5px; line-height: 1.6; }
 @media (max-width: 640px) { .trace-brief dl div { grid-template-columns: 1fr; gap: 6px; } }
+
+/* hero strengths row */
+.strengths { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.strengths li { font: 500 12.5px var(--mono); letter-spacing: .02em; padding: 6px 11px; border: 1px solid var(--rule-2); border-radius: 8px; color: var(--soft); background: rgb(8 9 12 / .45); }
+
+.hero .lede { max-width: 66ch; }
