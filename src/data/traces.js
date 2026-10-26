@@ -58,13 +58,31 @@ export const TRACES = [
     org: "InfiSwift AI",
     when: "Nov 2025 – Present",
     where: "Remote",
-    summary: "A computer-vision plus LLM platform, used across around 90 client projects, that reads multi-level structural PDFs and produces production-ready reinforcement schedules, 3D models, location plans and clash checks",
-    metrics: [["80", "", "of 90 client projects above 95% accuracy", "~"], ["95", "%+", "accuracy on those projects"], ["30", "+", "nodes in the LangGraph pipeline"], ["6", "", "custom computer-vision models"]],
+    summary: "A computer-vision plus LLM platform, used across around 90 client projects, that reads a building's full set of structural drawings and turns it into production-ready reinforcement schedules, a 3D model, location plans and a clash report",
+    brief: [
+      ["The problem", "Before steel can be cut for a building, someone has to read hundreds of structural drawing sheets, find every column, footing, wall and slab, and work out the exact bars inside each one. Every engineering firm draws differently, so this was slow, manual work done by skilled detailers"],
+      ["What it reads", "Whole multi-level PDF sets: floor plans, footing and slab plans, column, wall and footing schedules, detail sheets and sections. It sorts each sheet, reads the tables and text, and finds every element on the building's grid, including rotated sheets, angled elements and buildings with two grids"],
+      ["What it produces", "Bar and tie schedules in the manufacturer's production format, marking and location plans for every level, a full 3D model of the concrete and the steel cages inside it, and a clash report between structural elements"],
+      ["Where people stay in control", "It never guesses. A wrong but plausible value is treated as worse than a missing one, so anything unclear becomes a Request for Information for a reviewer instead of a silent guess. Reviewer answers and manual edits are kept, and the run picks up from where it stopped"],
+      ["The result", "Around 80 of 90 client projects reach more than 95% accuracy, on buildings of up to 14 levels"],
+    ],
+    metrics: [["80", "", "of 90 client projects above 95% accuracy", "~"], ["95", "%+", "accuracy on those projects"], ["31", "", "nodes in the LangGraph pipeline"], ["14", "", "building levels handled in one model"]],
     stages: [
       { name: "Read", items: [
         ["ai", "Owned the extraction pipeline end to end on a computer-vision plus LLM platform: a [[30+-node]] LangGraph workflow that classifies and reads multi-level structural PDFs, locates elements on engineering grids and produces production-ready reinforcement schedules and 3D models"],
         ["ai", "Built a hybrid extraction layer that combines [[six custom computer-vision models]] (detection and segmentation for columns, footings, grids, outlines, ties and walls) with Gemini-based table and tie-detail extraction using tool use and schema-validated output, so drawings with no standard format are read reliably"],
+        ["ai", "Classified every sheet, grouped sheets by level, and read text from both OCR and the PDF text layer, so schedules, callouts and level names are resolved before any element is placed"],
         ["ai", "Generalised the extraction logic to new structural element types by combining drawn dimensions, section views and grid axes, so one set of rules holds across [[7+ real project sets]] instead of needing per-project fixes"],
+      ] },
+      { name: "Columns and ties", items: [
+        ["ai", "Placed every column with its size, shape, orientation and levels, and classified how it changes between floors across [[7 transition types]]: goes through, shifts, changes size, shape or orientation, terminates, or runs a double lift"],
+        ["quality", "Measured angled elements from their true oriented box, not the screen-aligned envelope, so a column drawn at an angle keeps its real dimensions"],
+        ["ai", "Read tie details with two LLM steps, one to identify the tie shapes and one to place them, then enforced symmetric tie layouts and spiral pitch limits for circular columns"],
+      ] },
+      { name: "Walls, slabs and footings", items: [
+        ["ai", "Detected concrete walls on rotated and angled sheets, then worked out openings, junctions, thickness and heights against the slabs, trimming each wall at column faces"],
+        ["ai", "Rebuilt every slab from outline detection, PDF vector lines and an LLM agent, including openings, drops, stairs, beams and bands, thickness changes, ramps and falls, and pour breaks"],
+        ["ai", "Generated top and bottom bar meshes for pad footings, merged neighbouring footings with the same spec, and nested each ground-level column inside its footing"],
       ] },
       { name: "Locate", items: [
         ["ai", "Engineered grid-based geolocation that maps detected elements from pixels into one shared world coordinate system, plus elevation-based height calculation, so elements from different sheets across buildings of up to [[14 levels]] line up in a single unified geometry file"],
@@ -72,6 +90,7 @@ export const TRACES = [
       { name: "Schedule and model", items: [
         ["ai", "Developed the scheduling engine that computes bar quantities, lengths and shapes per element. It uses a [[3-tier]] decision cascade, handles [[7 column-transition cases]], places ties symmetrically, enforces production length and weight limits, and exports schedules in the manufacturer's production format"],
         ["result", "Generated 3D models of concrete geometry and the internal reinforcement cages, annotated location plans per level and element type, and a project-wide 3D scene with clash detection between structural elements"],
+        ["perf", "Grouped identical column stacks so they share one schedule, cutting duplicate work for the production team"],
       ] },
       { name: "Measure", items: [
         ["result", "Benchmarked accuracy on real client projects: around [[80 of 90]] projects reached [[more than 95%]] accuracy"],
@@ -80,12 +99,17 @@ export const TRACES = [
       { name: "Review", items: [
         ["quality", "Defined a typed taxonomy of [[130+]] Request-for-Information issue types with criticality levels and a resolution lifecycle, so ambiguous or missing data is flagged for review instead of silently guessed"],
         ["quality", "Built a human-in-the-loop review flow: missing or ambiguous data raises a Request for Information instead of failing the run, reviewer answers feed back into the model, and runs resume from checkpoints"],
+        ["quality", "Made reviewer edits permanent: walls a reviewer adds are replayed on every run, elements they delete stay deleted, and locked levels and schedule overrides always win over the AI"],
       ] },
       { name: "Deploy", items: [
         ["infra", "Deployed the pipeline as SQS-driven workers on AWS EC2 (CPU and GPU Docker profiles) with Redis and Celery, S3 artifact storage, a MySQL checkpointer for resumable runs and CodeBuild/CodeDeploy CI/CD. LLM calls are traced with per-run cost tracking, and LLM agent loops with tool use handle slab outlines and tie detail identification"],
+        ["infra", "Ran Gemini across four cost tiers with automatic fallback when rate-limited and fixed seeds for reproducible runs"],
+      ] },
+      { name: "Now building", items: [
+        ["ai", "Extending the pipeline to masonry block walls on its own path, behind a feature flag, verified to leave every concrete result unchanged across [[13]] projects"],
       ] },
     ],
-    stack: ["LangGraph", "Computer vision", "Gemini", "AWS SQS", "EC2 CPU/GPU", "Docker", "Redis", "Celery", "S3", "MySQL", "CodeBuild", "CodeDeploy"],
+    stack: ["LangGraph", "Computer vision", "Gemini", "OpenAI", "AWS SQS", "EC2 CPU/GPU", "Docker", "Redis", "Celery", "S3", "MySQL", "CodeBuild", "CodeDeploy"],
   },
   {
     id: "desk",
