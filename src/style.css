@@ -317,3 +317,11 @@ h1 em { font-style: normal; color: var(--sun); }
 @media (prefers-reduced-motion: reduce) { .span, .stage::before { transition: none; } }
 .lede a { color: var(--paper); text-decoration-color: var(--sun); text-underline-offset: 3px; }
 .lede a:hover { color: var(--sun); }
+
+/* plain-language brief inside a trace, for non-technical readers */
+.trace-brief { display: grid; gap: 12px; }
+.trace-brief dl { margin: 0; display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; }
+.trace-brief dl div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px; padding: 16px 18px; background: rgb(12 13 19 / .95); }
+.trace-brief dt { font: 700 17px/1.3 var(--display); color: var(--sun); }
+.trace-brief dd { margin: 0; color: var(--paper); font-size: 15.5px; line-height: 1.6; }
+@media (max-width: 640px) { .trace-brief dl div { grid-template-columns: 1fr; gap: 6px; } }

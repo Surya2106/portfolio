@@ -15,7 +15,13 @@ export const TRACES = [
     org: "InfiSwift AI",
     when: "Nov 2025 – Present",
     where: "Remote",
-    summary: "An end-to-end AI document-processing system that turns unstructured PDFs, Excel sheets, CSVs and emails into validated cost estimates, with a person in the loop wherever the data isn't grounded.",
+    summary: "An end-to-end AI document-processing system for a solar energy company in Japan. It turns unstructured PDFs, Excel sheets, CSVs and emails into validated cost estimates, with a person in the loop wherever the data isn't grounded.",
+    brief: [
+      ["The problem", "Every solar project starts as a pile of paperwork: supplier quotes, equipment lists, spreadsheets and long email threads, all in different formats. Estimators read all of it by hand, look up prices across tiered supplier catalogs, work out shipping rules and assemble a cost estimate. It was slow, repetitive and easy to get wrong."],
+      ["What I built", "A team of AI agents that does that work end to end. They read every document, pull out the quantities and specs, apply the right pricing tier and shipping rules, check the result against 48+ expert rules, and produce a validated estimate."],
+      ["Where people stay in control", "The system never guesses. If a number can't be traced back to a source document, it pauses and asks a reviewer, then learns from the answer so the same gap is handled automatically next time. Every AI decision and human override is recorded, so any estimate can be explained line by line."],
+      ["The result", "Estimators spend about 60% less time on manual work, extracted data is 35% more accurate, documents are processed 3× faster, and shipping-cost mistakes are down 40%. It runs as a secure multi-tenant SaaS product, so each customer's data stays separate."],
+    ],
     metrics: [["60", "%", "less manual estimation effort"], ["35", "%", "better data accuracy on noisy documents"], ["3", "×", "ingestion throughput under bulk uploads"], ["40", "%", "fewer incorrect shipping calculations"]],
     stages: [
       { name: "Orchestrate", items: [

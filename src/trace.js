@@ -26,6 +26,7 @@ export function createTraces({ onOpen, onClose, sound, reduce }) {
       <p class="trace-meta"><span>${esc(t.org)}</span><span>${esc(t.role)}</span><span>${esc(t.when)}</span><span>${esc(t.where)}</span></p>
       <h2 id="trace-title" class="trace-title">${esc(t.title)}</h2>
       <p class="trace-summary">${esc(t.summary)}</p>
+      ${t.brief ? `<div class="trace-brief"><p class="trace-label">In plain words</p><dl>${t.brief.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl></div>` : ""}
       ${t.metrics.length ? `<dl class="trace-metrics">${t.metrics.map(([v, suf, label, pre = ""]) => `
         <div><dt>${esc(label)}</dt><dd>${esc(pre)}<b data-to="${v}">${reduce ? fmt(+v, v.includes(".") ? v.split(".")[1].length : 0) : "0"}</b>${esc(suf)}</dd></div>`).join("")}</dl>` : ""}
       <ol class="trace-graph">${t.stages.map((s, i) => `
@@ -40,7 +41,7 @@ export function createTraces({ onOpen, onClose, sound, reduce }) {
 
   function animateIn() {
     if (reduce) return;
-    gsap.fromTo(body.querySelectorAll(".trace-meta span, .trace-title, .trace-summary"), { opacity: 0, y: 24 },
+    gsap.fromTo(body.querySelectorAll(".trace-meta span, .trace-title, .trace-summary, .trace-brief"), { opacity: 0, y: 24 },
       { opacity: 1, y: 0, duration: .9, stagger: .06, ease: "expo.out", delay: .25 });
     body.querySelectorAll(".trace-metrics b").forEach(b => {
       const to = +b.dataset.to, decimals = b.dataset.to.includes(".") ? b.dataset.to.split(".")[1].length : 0, o = { v: 0 };
