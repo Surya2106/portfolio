@@ -331,3 +331,7 @@ h1 em { font-style: normal; color: var(--sun); }
 .strengths li { font: 500 12.5px var(--mono); letter-spacing: .02em; padding: 6px 11px; border: 1px solid var(--rule-2); border-radius: 8px; color: var(--soft); background: rgb(8 9 12 / .45); }
 
 .hero .lede { max-width: 66ch; }
+/* phones: the particle portrait takes the top of the hero, the copy sits below it */
+@media (max-width: 900px) { .hero { padding-top: calc(84px + 40svh); } }
+/* between phone and wide desktop the portrait needs the right half to itself */
+@media (min-width: 901px) and (max-width: 1280px) { .hero-copy { max-width: 52vw; } }

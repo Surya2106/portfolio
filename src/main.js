@@ -15,7 +15,11 @@ import {
   shield,
   helix,
   seed,
+  portrait,
+  glyphAtlas,
+  loadImage,
 } from "./shapes.js";
+import portraitUrl from "./assets/portrait.png";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -124,8 +128,11 @@ const beside = (i, k = 0.21) =>
 const CHAPTERS = [
   {
     tint: "#2a1a08",
-    size: () => Math.min(view.w * (narrow ? 0.88 : 0.5), view.h * 1.9),
-    at: () => [0, view.h * (narrow ? 0.34 : 0.29)],
+    size: () =>
+      narrow
+        ? Math.min(view.w * 0.84, view.h * 0.4)
+        : Math.min(view.h * 0.96, view.w * 0.46),
+    at: () => (narrow ? [0, view.h * 0.21] : [view.w * 0.26, -view.h * 0.02]),
     turn: "face",
   },
   {
@@ -433,10 +440,22 @@ addEventListener(
 /* ---------------------------------------------------------------------------
    Build shapes, then open
    --------------------------------------------------------------------------- */
-Promise.all([fontsReady, minimumShow]).then(() => {
+const photo = loadImage(portraitUrl).catch(() => null);
+Promise.all([fontsReady, minimumShow, photo]).then(([, , img]) => {
+  stage?.resize();
   start = seed(COUNT);
+  stage?.setAtlas(glyphAtlas());
+  // the dot grid only needs to cover the visible screen around the portrait
+  const S = CHAPTERS[0].size(),
+    [ox, oy] = CHAPTERS[0].at();
+  const grid = [
+    (-view.w / 2 - ox) / S - 0.1,
+    (view.w / 2 - ox) / S + 0.1,
+    (-view.h / 2 - oy) / S - 0.1,
+    (view.h / 2 - oy) / S + 0.1,
+  ];
   shapes = [
-    words(COUNT, "SURYA"),
+    img ? portrait(COUNT, img, grid, narrow ? 56 : 88) : words(COUNT, "SURYA"),
     solarArray(COUNT),
     rebarCage(COUNT),
     retrieval(COUNT),
