@@ -14,6 +14,7 @@ attribute vec2 lFrom; attribute vec2 lTo;
 uniform float uMix, uTime, uSize, uPixel, uScatter, uScaleA, uScaleB, uPointerR, uLift, uWorldPx;
 uniform vec3 uOffA, uOffB; uniform mat3 uRotA, uRotB; uniform vec2 uPointer;
 varying vec3 vColor; varying float vAlpha; varying float vGlyph;
+float hash(float n){ return fract(sin(n) * 43758.5453); }
 
 void main(){
   float delay = seed.w * .45;
@@ -46,12 +47,21 @@ void main(){
   vColor = mix(cFrom, cTo, k) * (1. + f * .7);
   // glyphs hold their shape only at rest; in flight they travel as dots
   vGlyph = L.x >= 0. && sin(k * 3.14159) < .5 ? min(15., L.x + floor(f * 6.)) : -1.;
+  if (vGlyph >= 0. && uScatter > 0.) {
+    // landing glyphs decode through random characters before they settle,
+    // and a few keep flickering at rest
+    float tick = floor(uTime * 16.);
+    if (k > .5 && k < .999) vGlyph = floor(hash(seed.w * 97. + tick) * 16.);
+    else if (hash(seed.w * 131. + floor(uTime * 2.5)) > .993) vGlyph = floor(hash(seed.w * 57. + tick) * 16.);
+  }
   if (vGlyph >= 0.) {
     gl_PointSize = L.y * S * uWorldPx * (1000. / -mv.z);
     vAlpha = .8 + .2 * seed.w;
   } else {
-    gl_PointSize = uSize * uPixel * (.5 + seed.w) * (1000. / -mv.z) * (1. + flight * .5) * (L.x >= 0. ? 1. : L.y);
-    vAlpha = .55 + .45 * seed.w;
+    gl_PointSize = L.x < -1.5
+      ? uPixel * L.y * (1000. / -mv.z) * (1. + flight * .5)
+      : uSize * uPixel * (.5 + seed.w) * (1000. / -mv.z) * (1. + flight * .5) * (L.x >= 0. ? 1. : L.y);
+    vAlpha = L.x < -1.5 ? .9 : .55 + .45 * seed.w;
   }
 }`;
 

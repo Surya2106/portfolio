@@ -98,6 +98,7 @@ main { position: relative; z-index: 2; touch-action: pan-y pinch-zoom; }
 .words .w > span { display: inline-block; will-change: transform; }
 .eyebrow, .kicker { font: 500 12.5px var(--mono); letter-spacing: .06em; color: var(--sun); }
 .eyebrow { text-transform: uppercase; letter-spacing: .14em; }
+.hero-name { font: 800 clamp(22px, 2.4vw, 30px)/1.1 var(--display); letter-spacing: -.01em; margin-bottom: -10px; }
 .lede { color: var(--soft); font-size: clamp(17px, 1.35vw, 19px); max-width: 52ch; }
 
 /* CHAPTERS */

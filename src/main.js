@@ -455,7 +455,7 @@ Promise.all([fontsReady, minimumShow, photo]).then(([, , img]) => {
     (view.h / 2 - oy) / S + 0.1,
   ];
   shapes = [
-    img ? portrait(COUNT, img, grid, narrow ? 56 : 88) : words(COUNT, "SURYA"),
+    img ? portrait(COUNT, img, grid, narrow ? 62 : 104) : words(COUNT, "SURYA"),
     solarArray(COUNT),
     rebarCage(COUNT),
     retrieval(COUNT),
@@ -618,6 +618,7 @@ function heroIn() {
       { y: -30, opacity: 0 },
       { y: 0, opacity: 1, duration: 1, ease: EASE },
     )
+    .from(".hero-name", { opacity: 0, y: 14, duration: 0.9, ease: EASE }, "<.05")
     .add(() => decode($(".hero .eyebrow")), "<")
     .from(
       ".hero .w > span",
