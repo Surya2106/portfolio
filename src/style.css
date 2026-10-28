@@ -98,6 +98,9 @@ main { position: relative; z-index: 2; touch-action: pan-y pinch-zoom; }
 .words .w > span { display: inline-block; will-change: transform; }
 .eyebrow, .kicker { font: 500 12.5px var(--mono); letter-spacing: .06em; color: var(--sun); }
 .eyebrow { text-transform: uppercase; letter-spacing: .14em; }
+.hero-name { font: 800 clamp(22px, 2.4vw, 30px)/1.1 var(--display); letter-spacing: -.01em; margin-bottom: -10px; }
+/* when the name is written in particles, the text stays for screen readers */
+html.pname .hero-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .lede { color: var(--soft); font-size: clamp(17px, 1.35vw, 19px); max-width: 52ch; }
 
 /* CHAPTERS */
@@ -331,3 +334,7 @@ h1 em { font-style: normal; color: var(--sun); }
 .strengths li { font: 500 12.5px var(--mono); letter-spacing: .02em; padding: 6px 11px; border: 1px solid var(--rule-2); border-radius: 8px; color: var(--soft); background: rgb(8 9 12 / .45); }
 
 .hero .lede { max-width: 66ch; }
+/* phones: the particle portrait takes the top of the hero, the copy sits below it */
+@media (max-width: 900px) { .hero { padding-top: calc(84px + 40svh); } }
+/* between phone and wide desktop the portrait needs the right half to itself */
+@media (min-width: 901px) and (max-width: 1280px) { .hero-copy { max-width: 52vw; } }

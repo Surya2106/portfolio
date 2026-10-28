@@ -15,7 +15,11 @@ import {
   shield,
   helix,
   seed,
+  portrait,
+  glyphAtlas,
+  loadImage,
 } from "./shapes.js";
+import portraitUrl from "./assets/portrait.png";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -115,6 +119,7 @@ const stage = createStage($("#stage"), {
   tier: TIER,
   reduce,
 });
+if (!stage) document.documentElement.classList.add("no-gl");
 const view = stage?.view ?? { w: 1, h: 1 };
 const sections = $$("[data-scene]");
 const sideOf = (i) => (sections[i]?.dataset.side === "right" ? -1 : 1);
@@ -124,9 +129,12 @@ const beside = (i, k = 0.21) =>
 const CHAPTERS = [
   {
     tint: "#2a1a08",
-    size: () => Math.min(view.w * (narrow ? 0.88 : 0.5), view.h * 1.9),
-    at: () => [0, view.h * (narrow ? 0.34 : 0.29)],
-    turn: "face",
+    size: () =>
+      narrow
+        ? Math.min(view.w * 0.84, view.h * 0.4)
+        : Math.min(view.h * 0.96, view.w * 0.46),
+    at: () => (narrow ? [0, view.h * 0.21] : [view.w * 0.26, -view.h * 0.02]),
+    turn: narrow ? "face" : "hero",
   },
   {
     tint: "#0d1a3a",
@@ -191,6 +199,10 @@ function turnFor(kind, t, out) {
   switch (kind) {
     case "face":
       euler.set(my * 0.14, mx * 0.3 + Math.sin(T * 0.4) * 0.06, 0);
+      break;
+    // the hero name sits far from the portrait's centre, so lean gently
+    case "hero":
+      euler.set(my * 0.07, mx * 0.12 + Math.sin(T * 0.4) * 0.025, 0);
       break;
     case "spin":
       euler.set(0.3 + my * 0.1, T * 0.25 + mx * 0.3, 0);
@@ -433,10 +445,53 @@ addEventListener(
 /* ---------------------------------------------------------------------------
    Build shapes, then open
    --------------------------------------------------------------------------- */
-Promise.all([fontsReady, minimumShow]).then(() => {
+const photo = loadImage(portraitUrl).catch(() => null);
+Promise.all([fontsReady, minimumShow, photo]).then(([, , img]) => {
+  stage?.resize();
   start = seed(COUNT);
+  stage?.setAtlas(glyphAtlas());
+  // the dot grid only needs to cover the visible screen around the portrait
+  const S = CHAPTERS[0].size(),
+    [ox, oy] = CHAPTERS[0].at();
+  const grid = [
+    (-view.w / 2 - ox) / S - 0.1,
+    (view.w / 2 - ox) / S + 0.1,
+    (-view.h / 2 - oy) / S - 0.1,
+    (view.h / 2 - oy) / S + 0.1,
+  ];
+  // desktop: the full name in particles, in the free space above the hero copy
+  let name;
+  if (!narrow) {
+    const u = view.h / innerHeight,
+      toX = (px) => ((px - innerWidth / 2) * u - ox) / S,
+      toY = (py) => ((innerHeight / 2 - py) * u - oy) / S;
+    const copy = $(".hero-copy").getBoundingClientRect(),
+      top = $(".hero .eyebrow").getBoundingClientRect().top;
+    const room = top - 110;
+    // two lines, as large as the room allows, stopping short of the head;
+    // on short screens one line, and if even that won't fit, plain text
+    const headLeft = innerWidth / 2 + (ox - 0.32 * S) / u;
+    const across = headLeft - 64 - copy.left;
+    const two = Math.min(across, (room - 44) / 0.45, 640),
+      one = Math.min(across, (room - 36) / 0.17, 900);
+    const [text, width, ratio] =
+      two > 300
+        ? ["Surya Teja\nPinninti", two, 0.45]
+        : ["Surya Teja Pinninti", one, 0.17];
+    if (width > 300) {
+      name = {
+        text,
+        left: toX(copy.left),
+        cy: toY(top - 36 - (width * ratio) / 2),
+        width: (width * u) / S,
+      };
+      document.documentElement.classList.add("pname");
+    }
+  }
   shapes = [
-    words(COUNT, "SURYA"),
+    img
+      ? portrait(COUNT, img, grid, narrow ? 62 : 104, name)
+      : words(COUNT, "SURYA"),
     solarArray(COUNT),
     rebarCage(COUNT),
     retrieval(COUNT),
@@ -599,6 +654,7 @@ function heroIn() {
       { y: -30, opacity: 0 },
       { y: 0, opacity: 1, duration: 1, ease: EASE },
     )
+    .from(".hero-name", { opacity: 0, y: 14, duration: 0.9, ease: EASE }, "<.05")
     .add(() => decode($(".hero .eyebrow")), "<")
     .from(
       ".hero .w > span",

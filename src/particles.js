@@ -9,9 +9,12 @@ import * as THREE from "three";
 
 const PARTICLE_VERT = /* glsl */ `
 attribute vec3 from; attribute vec3 to; attribute vec3 cFrom; attribute vec3 cTo; attribute vec4 seed;
-uniform float uMix, uTime, uSize, uPixel, uScatter, uScaleA, uScaleB, uPointerR, uLift;
+// look = (glyph index or -1 for a dot, size): glyph cells are sized in shape units, dots as a multiplier
+attribute vec2 lFrom; attribute vec2 lTo;
+uniform float uMix, uTime, uSize, uPixel, uScatter, uScaleA, uScaleB, uPointerR, uLift, uWorldPx;
 uniform vec3 uOffA, uOffB; uniform mat3 uRotA, uRotB; uniform vec2 uPointer;
-varying vec3 vColor; varying float vAlpha;
+varying vec3 vColor; varying float vAlpha; varying float vGlyph;
+float hash(float n){ return fract(sin(n) * 43758.5453); }
 
 void main(){
   float delay = seed.w * .45;
@@ -27,27 +30,53 @@ void main(){
   float tw = flight * (seed.w - .5) * .9;
   p.xy = mat2(cos(tw), -sin(tw), sin(tw), cos(tw)) * p.xy;
 
-  // idle breathing
-  p += vec3(sin(uTime * .8 + seed.w * 37.), cos(uTime * .7 + seed.w * 23.), sin(uTime * .6 + seed.w * 11.)) * S * .003;
+  // idle breathing, barely there for glyphs so their rows stay readable
+  vec2 L = k < .5 ? lFrom : lTo;
+  p += vec3(sin(uTime * .8 + seed.w * 37.), cos(uTime * .7 + seed.w * 23.), sin(uTime * .6 + seed.w * 11.)) * S * (L.x >= 0. ? .0004 : .003);
   // scroll velocity lifts particles a little
   p.y += uLift * S * (.0003 + seed.w * .0012);
 
   // the pointer pushes particles away and towards the camera
   vec2 d = p.xy - uPointer; float dist = length(d);
-  float f = smoothstep(uPointerR, 0., dist);
+  float f = uPointerR > 1. ? smoothstep(uPointerR, 0., dist) : 0.;
   p.xy += d / (dist + .001) * f * uPointerR * .5;
   p.z += f * uPointerR * .5;
 
   vec4 mv = modelViewMatrix * vec4(p, 1.);
   gl_Position = projectionMatrix * mv;
-  gl_PointSize = uSize * uPixel * (.5 + seed.w) * (1000. / -mv.z) * (1. + flight * .5);
   vColor = mix(cFrom, cTo, k) * (1. + f * .7);
-  vAlpha = .55 + .45 * seed.w;
+  // glyphs hold their shape only at rest; in flight they travel as dots
+  vGlyph = L.x >= 0. && sin(k * 3.14159) < .5 ? min(15., L.x + floor(f * 6.)) : -1.;
+  if (vGlyph >= 0. && uScatter > 0.) {
+    // landing glyphs decode through random characters before they settle,
+    // and a few keep flickering at rest
+    float tick = floor(uTime * 16.);
+    if (k > .5 && k < .999) vGlyph = floor(hash(seed.w * 97. + tick) * 16.);
+    else if (hash(seed.w * 131. + floor(uTime * 2.5)) > .993) vGlyph = floor(hash(seed.w * 57. + tick) * 16.);
+  }
+  if (vGlyph >= 0.) {
+    gl_PointSize = L.y * S * uWorldPx * (1000. / -mv.z);
+    vAlpha = .8 + .2 * seed.w;
+  } else {
+    gl_PointSize = L.x < -1.5
+      ? uPixel * L.y * (1000. / -mv.z) * (1. + flight * .5)
+      : uSize * uPixel * (.5 + seed.w) * (1000. / -mv.z) * (1. + flight * .5) * (L.x >= 0. ? 1. : L.y);
+    vAlpha = L.x < -1.5 ? .9 : .55 + .45 * seed.w;
+  }
 }`;
 
 const PARTICLE_FRAG = /* glsl */ `
-varying vec3 vColor; varying float vAlpha;
+uniform sampler2D uAtlas;
+varying vec3 vColor; varying float vAlpha; varying float vGlyph;
 void main(){
+  if (vGlyph >= 0.) {
+    float g = floor(vGlyph + .5);
+    vec2 cell = vec2(mod(g, 4.), floor(g / 4.));
+    float a = texture2D(uAtlas, (cell + gl_PointCoord) / 4.).a;
+    if (a < .04) discard;
+    gl_FragColor = vec4(vColor, a * vAlpha);
+    return;
+  }
   float r = length(gl_PointCoord - .5);
   if (r > .5) discard;
   float core = smoothstep(.5, .0, r);
@@ -191,6 +220,14 @@ export function createStage(canvas, { count, maxPixel, tier, reduce }) {
       k,
       new THREE.BufferAttribute(new Float32Array(count * 3), 3),
     );
+  for (const k of ["lFrom", "lTo"])
+    geo.setAttribute(
+      k,
+      new THREE.BufferAttribute(new Float32Array(count * 2), 2),
+    );
+  // shapes without a look are plain dots
+  const plain = new Float32Array(count * 2);
+  for (let i = 0; i < count; i++) plain.set([-1, 1], i * 2);
   geo.setAttribute("seed", new THREE.BufferAttribute(seed, 4));
   geo.setAttribute(
     "position",
@@ -216,6 +253,8 @@ export function createStage(canvas, { count, maxPixel, tier, reduce }) {
       uPointer: { value: new THREE.Vector2(1e4, 1e4) },
       uPointerR: { value: 0 },
       uLift: { value: 0 },
+      uWorldPx: { value: 1 },
+      uAtlas: { value: null },
     },
   });
   const points = new THREE.Points(geo, mat);
@@ -255,6 +294,13 @@ export function createStage(canvas, { count, maxPixel, tier, reduce }) {
     camera.updateProjectionMatrix();
     view.h = 2 * 1000 * Math.tan(THREE.MathUtils.degToRad(17.5));
     view.w = view.h * (w / h);
+    mat.uniforms.uWorldPx.value = (h * pr) / view.h;
+  }
+  function setAtlas(canvas) {
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.flipY = false;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    mat.uniforms.uAtlas.value = tex;
   }
 
   const pair = { a: null, b: null };
@@ -264,7 +310,9 @@ export function createStage(canvas, { count, maxPixel, tier, reduce }) {
     geo.attributes.cFrom.array.set(A.col);
     geo.attributes.to.array.set(B.pos);
     geo.attributes.cTo.array.set(B.col);
-    for (const k of ["from", "to", "cFrom", "cTo"])
+    geo.attributes.lFrom.array.set(A.look || plain);
+    geo.attributes.lTo.array.set(B.look || plain);
+    for (const k of ["from", "to", "cFrom", "cTo", "lFrom", "lTo"])
       geo.attributes[k].needsUpdate = true;
     pair.a = A;
     pair.b = B;
@@ -314,6 +362,7 @@ export function createStage(canvas, { count, maxPixel, tier, reduce }) {
     view,
     resize,
     setShapes,
+    setAtlas,
     render,
     particles: mat.uniforms,
     wind: wind.uniforms,

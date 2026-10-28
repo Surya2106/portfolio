@@ -123,6 +123,31 @@ export function words(N, text) {
   );
 }
 
+// Text of any length, one or more lines set left-aligned; longest side 1
+export function line(N, text) {
+  const font = `800 200px "Cabinet Grotesk", "General Sans", sans-serif`;
+  const rows = text.split("\n"),
+    lh = 190;
+  const probe = document.createElement("canvas").getContext("2d");
+  probe.font = font;
+  const w = Math.ceil(Math.max(...rows.map((r) => probe.measureText(r).width))) + 60;
+  return fromCanvas(
+    N,
+    w,
+    rows.length * lh + 90,
+    (g) => {
+      g.font = font;
+      g.textBaseline = "middle";
+      g.fillStyle = "#fff";
+      rows.forEach((r, i) => g.fillText(r, 30, 45 + lh * (i + 0.5) + 8));
+    },
+    (_, ty) =>
+      Math.random() < 0.14
+        ? mix(SUN, FLARE, ty)
+        : mix(PAPER, [1, 1, 1], Math.random() * 0.25),
+  );
+}
+
 // AI estimation: a 3 × 2 solar array, every panel a grid of cells. Some cells are lit,
 // the lines an estimate has already validated.
 export function solarArray(N) {
@@ -365,4 +390,171 @@ export function seed(N) {
     onSphere(0.004 * Math.random()),
     Math.random() < 0.25 ? SUN : PAPER,
   ]);
+}
+
+// ---------------------------------------------------------------------------
+//  Hero portrait: the photo redrawn as monospace glyphs. Each glyph particle
+//  carries `look` = [glyph index, cell size], where the index points into an
+//  atlas ordered from sparse to dense ink. Brighter cells get denser glyphs and
+//  sit a little closer, over a dome so the head turns like a solid. The rest
+//  of the particles lay a faint dot grid behind it.
+// ---------------------------------------------------------------------------
+// sparse to dense ink, so a glyph's index doubles as its tone
+const GLYPHS = ".:-~=+*<>[]{}#%@";
+export const ATLAS_CELLS = 4;
+
+export function glyphAtlas(px = 64) {
+  const c = document.createElement("canvas");
+  c.width = c.height = px * ATLAS_CELLS;
+  const g = c.getContext("2d");
+  g.font = `600 ${px * 0.92}px "IBM Plex Mono", ui-monospace, monospace`;
+  g.textAlign = "center";
+  g.textBaseline = "middle";
+  g.fillStyle = "#fff";
+  [...GLYPHS].forEach((ch, i) =>
+    g.fillText(
+      ch,
+      (i % ATLAS_CELLS) * px + px / 2,
+      Math.floor(i / ATLAS_CELLS) * px + px / 2,
+    ),
+  );
+  return c;
+}
+
+export function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+// monospace cells are taller than wide, so columns run ~1.7× denser than rows
+const CELL = 0.6;
+// `name` = { text, left, cy, width } in shape units: the name is written in
+// particles there, beside the portrait
+export function portrait(N, img, [gx0, gx1, gy0, gy1], rows = 96, name) {
+  const cols = Math.round((rows * img.width) / img.height / CELL);
+  const c = document.createElement("canvas");
+  c.width = cols;
+  c.height = rows;
+  const g = c.getContext("2d", { willReadFrequently: true });
+  g.imageSmoothingQuality = "high";
+  g.drawImage(img, 0, 0, cols, rows);
+  const d = g.getImageData(0, 0, cols, rows).data;
+
+  // keep the subject: drop transparent or near-white background, then erode
+  // one cell so the cut-out's light fringe doesn't draw a halo
+  const L = new Float32Array(cols * rows).fill(-1);
+  for (let i = 0; i < cols * rows; i++) {
+    const r = d[i * 4] / 255,
+      gr = d[i * 4 + 1] / 255,
+      b = d[i * 4 + 2] / 255;
+    if (d[i * 4 + 3] > 200 && Math.min(r, gr, b) < 0.86)
+      L[i] = 0.2126 * r + 0.7152 * gr + 0.0722 * b;
+  }
+  const at = (x, y) =>
+    x < 0 || y < 0 || x >= cols || y >= rows ? -1 : L[y * cols + x];
+  const cells = [];
+  for (let y = 0; y < rows; y++)
+    for (let x = 0; x < cols; x++) {
+      const v = at(x, y);
+      if (v < 0 || at(x - 1, y) < 0 || at(x + 1, y) < 0 || at(x, y - 1) < 0)
+        continue;
+      // sharpen against the 3 × 3 neighbourhood so eyes, brows and beard read
+      let sum = 0,
+        k = 0;
+      for (let j = -1; j <= 1; j++)
+        for (let i = -1; i <= 1; i++) {
+          const w = at(x + i, y + j);
+          if (w >= 0) {
+            sum += w;
+            k++;
+          }
+        }
+      const i4 = (y * cols + x) * 4;
+      cells.push([
+        x,
+        y,
+        v + (v - sum / k) * 1.4,
+        d[i4] / 255,
+        d[i4 + 1] / 255,
+        d[i4 + 2] / 255,
+      ]);
+    }
+  // equalise: a cell's tone is its rank, so the face uses the full glyph range
+  const order = cells.map((_, i) => i).sort((a, b) => cells[a][2] - cells[b][2]);
+  const rank = new Float32Array(cells.length);
+  order.forEach((ci, r) => {
+    rank[ci] = r / Math.max(1, cells.length - 1);
+  });
+
+  const pitch = 1 / Math.max(rows, cols * CELL),
+    pos = new Float32Array(N * 3),
+    col = new Float32Array(N * 3),
+    look = new Float32Array(N * 2);
+  const put = (i, p, k, l) => {
+    pos.set(p, i * 3);
+    col.set(k, i * 3);
+    look.set(l, i * 2);
+  };
+
+  const n = Math.min(N, cells.length);
+  for (let i = 0; i < n; i++) {
+    const [x, y, , r, gr, b] = cells[i];
+    const t = Math.pow(rank[i], 1.35);
+    const px = (x + 0.5 - cols / 2) * pitch * CELL,
+      py = -(y + 0.5 - rows / 2) * pitch;
+    // shoulders fade towards the bottom and the sides
+    const fade =
+      Math.min(1, Math.max(0, (rows - y) / (rows * 0.3))) *
+      Math.min(1, Math.max(0, 1.7 - Math.abs(px) * 2.6));
+    const dome = Math.sqrt(Math.max(0, 0.2 - px * px - py * py * 0.6)) * 0.5;
+    // warm paper tinted by the photo, with the brightest cells turning to sunlight
+    const tone = mix(PAPER, [r * 1.25, gr * 1.05, b * 0.9], 0.3);
+    const warm = mix(tone, [1, 0.9, 0.78], t > 0.85 ? (t - 0.85) * 3 : 0);
+    put(
+      i,
+      [px, py, dome + (t - 0.5) * 0.04],
+      warm.map((v) => v * (0.38 + t * 0.85) * fade),
+      // the darkest cells stay empty: eyes, brows and hair shadow read as negative space
+      [Math.min(15, Math.round(t * 15)), fade < 0.05 || t < 0.07 ? 0 : pitch * 1.1],
+    );
+  }
+
+  // the name takes a share of what's left
+  let m = 0;
+  if (name) {
+    m = Math.min(18000, Math.round((N - n) * 0.62));
+    const t = line(m, name.text);
+    for (let i = 0; i < m; i++)
+      put(
+        n + i,
+        [
+          name.left + name.width / 2 + t.pos[i * 3] * name.width,
+          name.cy + t.pos[i * 3 + 1] * name.width,
+          t.pos[i * 3 + 2],
+        ],
+        t.col.subarray(i * 3, i * 3 + 3),
+        [-1, 1],
+      );
+  }
+
+  // a faint dot grid behind the face, as wide as the leftovers allow
+  const left = N - n - m;
+  const W = gx1 - gx0,
+    H = gy1 - gy0,
+    step = Math.max(pitch * 3.2, Math.sqrt((W * H) / Math.max(1, left))),
+    gw = Math.max(1, Math.floor(W / step));
+  for (let j = 0; j < left; j++) {
+    const gx = j % gw,
+      gy = Math.floor(j / gw);
+    const x = gx0 + gx * step,
+      y = gy1 - gy * step;
+    const shade = 0.34 + Math.random() * 0.06;
+    // look.x = -2 marks an even grid dot; spares past the grid rest at zero size
+    put(n + m + j, [x, y, -0.06], [shade, shade * 0.97, shade * 0.94], [-2, y < gy0 ? 0 : 2.2]);
+  }
+  return { pos, col, look };
 }
