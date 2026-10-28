@@ -99,6 +99,8 @@ main { position: relative; z-index: 2; touch-action: pan-y pinch-zoom; }
 .eyebrow, .kicker { font: 500 12.5px var(--mono); letter-spacing: .06em; color: var(--sun); }
 .eyebrow { text-transform: uppercase; letter-spacing: .14em; }
 .hero-name { font: 800 clamp(22px, 2.4vw, 30px)/1.1 var(--display); letter-spacing: -.01em; margin-bottom: -10px; }
+/* desktop writes the name in particles; the text stays for screen readers */
+@media (min-width: 901px) { html:not(.no-gl) .hero-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } }
 .lede { color: var(--soft); font-size: clamp(17px, 1.35vw, 19px); max-width: 52ch; }
 
 /* CHAPTERS */

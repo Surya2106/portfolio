@@ -119,6 +119,7 @@ const stage = createStage($("#stage"), {
   tier: TIER,
   reduce,
 });
+if (!stage) document.documentElement.classList.add("no-gl");
 const view = stage?.view ?? { w: 1, h: 1 };
 const sections = $$("[data-scene]");
 const sideOf = (i) => (sections[i]?.dataset.side === "right" ? -1 : 1);
@@ -133,7 +134,7 @@ const CHAPTERS = [
         ? Math.min(view.w * 0.84, view.h * 0.4)
         : Math.min(view.h * 0.96, view.w * 0.46),
     at: () => (narrow ? [0, view.h * 0.21] : [view.w * 0.26, -view.h * 0.02]),
-    turn: "face",
+    turn: narrow ? "face" : "hero",
   },
   {
     tint: "#0d1a3a",
@@ -198,6 +199,10 @@ function turnFor(kind, t, out) {
   switch (kind) {
     case "face":
       euler.set(my * 0.14, mx * 0.3 + Math.sin(T * 0.4) * 0.06, 0);
+      break;
+    // the hero name sits far from the portrait's centre, so lean gently
+    case "hero":
+      euler.set(my * 0.07, mx * 0.12 + Math.sin(T * 0.4) * 0.025, 0);
       break;
     case "spin":
       euler.set(0.3 + my * 0.1, T * 0.25 + mx * 0.3, 0);
@@ -454,8 +459,27 @@ Promise.all([fontsReady, minimumShow, photo]).then(([, , img]) => {
     (-view.h / 2 - oy) / S - 0.1,
     (view.h / 2 - oy) / S + 0.1,
   ];
+  // desktop: the full name in particles, in the free space above the hero copy
+  let name;
+  if (!narrow) {
+    const u = view.h / innerHeight,
+      toX = (px) => ((px - innerWidth / 2) * u - ox) / S,
+      toY = (py) => ((innerHeight / 2 - py) * u - oy) / S;
+    const copy = $(".hero-copy").getBoundingClientRect(),
+      top = $(".hero .eyebrow").getBoundingClientRect().top;
+    const room = Math.max(60, top - 110);
+    const width = Math.min(copy.width * 0.9, innerWidth * 0.5, room * 6.5);
+    name = {
+      text: "Surya Teja Pinninti",
+      left: toX(copy.left),
+      cy: toY(Math.max(110 + room / 2, top - 30 - width / 13)),
+      width: (width * u) / S,
+    };
+  }
   shapes = [
-    img ? portrait(COUNT, img, grid, narrow ? 62 : 104) : words(COUNT, "SURYA"),
+    img
+      ? portrait(COUNT, img, grid, narrow ? 62 : 104, name)
+      : words(COUNT, "SURYA"),
     solarArray(COUNT),
     rebarCage(COUNT),
     retrieval(COUNT),

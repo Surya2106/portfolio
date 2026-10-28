@@ -123,6 +123,30 @@ export function words(N, text) {
   );
 }
 
+// A line of text of any length, longest side 1 like every other shape
+export function line(N, text) {
+  const font = `800 200px "Cabinet Grotesk", "General Sans", sans-serif`;
+  const probe = document.createElement("canvas").getContext("2d");
+  probe.font = font;
+  const w = Math.ceil(probe.measureText(text).width) + 60;
+  return fromCanvas(
+    N,
+    w,
+    280,
+    (g, cw, ch) => {
+      g.font = font;
+      g.textAlign = "center";
+      g.textBaseline = "middle";
+      g.fillStyle = "#fff";
+      g.fillText(text, cw / 2, ch / 2 + 8);
+    },
+    (_, ty) =>
+      Math.random() < 0.14
+        ? mix(SUN, FLARE, ty)
+        : mix(PAPER, [1, 1, 1], Math.random() * 0.25),
+  );
+}
+
 // AI estimation: a 3 × 2 solar array, every panel a grid of cells. Some cells are lit,
 // the lines an estimate has already validated.
 export function solarArray(N) {
@@ -407,7 +431,9 @@ export function loadImage(src) {
 
 // monospace cells are taller than wide, so columns run ~1.7× denser than rows
 const CELL = 0.6;
-export function portrait(N, img, [gx0, gx1, gy0, gy1], rows = 96) {
+// `name` = { text, left, cy, width } in shape units: the name is written in
+// particles there, beside the portrait
+export function portrait(N, img, [gx0, gx1, gy0, gy1], rows = 96, name) {
   const cols = Math.round((rows * img.width) / img.height / CELL);
   const c = document.createElement("canvas");
   c.width = cols;
@@ -496,8 +522,26 @@ export function portrait(N, img, [gx0, gx1, gy0, gy1], rows = 96) {
     );
   }
 
+  // the name takes a share of what's left
+  let m = 0;
+  if (name) {
+    m = Math.min(14000, Math.round((N - n) * 0.55));
+    const t = line(m, name.text);
+    for (let i = 0; i < m; i++)
+      put(
+        n + i,
+        [
+          name.left + name.width / 2 + t.pos[i * 3] * name.width,
+          name.cy + t.pos[i * 3 + 1] * name.width,
+          t.pos[i * 3 + 2],
+        ],
+        t.col.subarray(i * 3, i * 3 + 3),
+        [-1, 1],
+      );
+  }
+
   // a faint dot grid behind the face, as wide as the leftovers allow
-  const left = N - n;
+  const left = N - n - m;
   const W = gx1 - gx0,
     H = gy1 - gy0,
     step = Math.max(pitch * 3.2, Math.sqrt((W * H) / Math.max(1, left))),
@@ -509,7 +553,7 @@ export function portrait(N, img, [gx0, gx1, gy0, gy1], rows = 96) {
       y = gy1 - gy * step;
     const shade = 0.34 + Math.random() * 0.06;
     // look.x = -2 marks an even grid dot; spares past the grid rest at zero size
-    put(n + j, [x, y, -0.06], [shade, shade * 0.97, shade * 0.94], [-2, y < gy0 ? 0 : 2.2]);
+    put(n + m + j, [x, y, -0.06], [shade, shade * 0.97, shade * 0.94], [-2, y < gy0 ? 0 : 2.2]);
   }
   return { pos, col, look };
 }
