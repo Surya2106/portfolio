@@ -123,22 +123,23 @@ export function words(N, text) {
   );
 }
 
-// A line of text of any length, longest side 1 like every other shape
+// Text of any length, one or more lines set left-aligned; longest side 1
 export function line(N, text) {
   const font = `800 200px "Cabinet Grotesk", "General Sans", sans-serif`;
+  const rows = text.split("\n"),
+    lh = 190;
   const probe = document.createElement("canvas").getContext("2d");
   probe.font = font;
-  const w = Math.ceil(probe.measureText(text).width) + 60;
+  const w = Math.ceil(Math.max(...rows.map((r) => probe.measureText(r).width))) + 60;
   return fromCanvas(
     N,
     w,
-    280,
-    (g, cw, ch) => {
+    rows.length * lh + 90,
+    (g) => {
       g.font = font;
-      g.textAlign = "center";
       g.textBaseline = "middle";
       g.fillStyle = "#fff";
-      g.fillText(text, cw / 2, ch / 2 + 8);
+      rows.forEach((r, i) => g.fillText(r, 30, 45 + lh * (i + 0.5) + 8));
     },
     (_, ty) =>
       Math.random() < 0.14
@@ -525,7 +526,7 @@ export function portrait(N, img, [gx0, gx1, gy0, gy1], rows = 96, name) {
   // the name takes a share of what's left
   let m = 0;
   if (name) {
-    m = Math.min(14000, Math.round((N - n) * 0.55));
+    m = Math.min(18000, Math.round((N - n) * 0.62));
     const t = line(m, name.text);
     for (let i = 0; i < m; i++)
       put(

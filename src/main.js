@@ -467,14 +467,26 @@ Promise.all([fontsReady, minimumShow, photo]).then(([, , img]) => {
       toY = (py) => ((innerHeight / 2 - py) * u - oy) / S;
     const copy = $(".hero-copy").getBoundingClientRect(),
       top = $(".hero .eyebrow").getBoundingClientRect().top;
-    const room = Math.max(60, top - 110);
-    const width = Math.min(copy.width * 0.9, innerWidth * 0.5, room * 6.5);
-    name = {
-      text: "Surya Teja Pinninti",
-      left: toX(copy.left),
-      cy: toY(Math.max(110 + room / 2, top - 30 - width / 13)),
-      width: (width * u) / S,
-    };
+    const room = top - 110;
+    // two lines, as large as the room allows, stopping short of the head;
+    // on short screens one line, and if even that won't fit, plain text
+    const headLeft = innerWidth / 2 + (ox - 0.32 * S) / u;
+    const across = headLeft - 64 - copy.left;
+    const two = Math.min(across, (room - 44) / 0.45, 640),
+      one = Math.min(across, (room - 36) / 0.17, 900);
+    const [text, width, ratio] =
+      two > 300
+        ? ["Surya Teja\nPinninti", two, 0.45]
+        : ["Surya Teja Pinninti", one, 0.17];
+    if (width > 300) {
+      name = {
+        text,
+        left: toX(copy.left),
+        cy: toY(top - 36 - (width * ratio) / 2),
+        width: (width * u) / S,
+      };
+      document.documentElement.classList.add("pname");
+    }
   }
   shapes = [
     img
