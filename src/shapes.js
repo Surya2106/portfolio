@@ -130,7 +130,8 @@ export function line(N, text) {
     lh = 190;
   const probe = document.createElement("canvas").getContext("2d");
   probe.font = font;
-  const w = Math.ceil(Math.max(...rows.map((r) => probe.measureText(r).width))) + 60;
+  const w =
+    Math.ceil(Math.max(...rows.map((r) => probe.measureText(r).width))) + 60;
   return fromCanvas(
     N,
     w,
@@ -303,7 +304,11 @@ export function orbit(N) {
     if (r < 0.84) {
       const a = Math.random() * Math.PI * 2;
       return [
-        [Math.cos(a) * R + rand() * 0.006, rand() * 0.006, Math.sin(a) * R + rand() * 0.006],
+        [
+          Math.cos(a) * R + rand() * 0.006,
+          rand() * 0.006,
+          Math.sin(a) * R + rand() * 0.006,
+        ],
         mix(STEEL, PAPER, 0.3),
       ];
     }
@@ -347,6 +352,75 @@ export function shield(N) {
     (red) => (red > 0.9 ? 4 : 1),
   );
 }
+// ShowDown: the In-Between moment. Two gate cards stand apart and the third
+// card lands in the gap between them, nearer the viewer and lit, the way the
+// bet resolves at the table. Faces are drawn grey, edges and pips white, so
+// the red channel tells them apart.
+function cardFace(N, rank, suit, ink, face) {
+  return fromCanvas(
+    N,
+    500,
+    700,
+    (g, w, h) => {
+      g.beginPath();
+      g.roundRect(30, 30, w - 60, h - 60, 40);
+      g.fillStyle = "#6a6a6a";
+      g.fill();
+      g.lineWidth = 12;
+      g.strokeStyle = "#fff";
+      g.stroke();
+      g.fillStyle = "#fff";
+      g.textAlign = "center";
+      g.textBaseline = "middle";
+      g.font = `800 300px "Cabinet Grotesk", sans-serif`;
+      g.fillText(suit, w / 2, h / 2 + 10);
+      for (const flip of [0, 1]) {
+        g.save();
+        if (flip) {
+          g.translate(w, h);
+          g.rotate(Math.PI);
+        }
+        g.font = `800 92px "Cabinet Grotesk", sans-serif`;
+        g.fillText(rank, 100, 112);
+        g.font = `800 62px "Cabinet Grotesk", sans-serif`;
+        g.fillText(suit, 100, 186);
+        g.restore();
+      }
+    },
+    (red) => (red > 0.9 ? ink() : face()),
+    (red) => (red > 0.9 ? 3 : 1),
+  );
+}
+export function cardHand(N) {
+  const nGate = Math.round(N * 0.3),
+    nMid = N - nGate * 2;
+  const dim = () => mix(DEEP, STEEL, 0.15 + Math.random() * 0.2);
+  const cards = [
+    // left gate, right gate, then the card landing between them
+    { set: cardFace(nGate, "A", "♠", () => mix(PAPER, STEEL, Math.random() * 0.3), dim), x: -0.47, y: -0.03, z: 0, rot: 0.1, k: 0.58 },
+    { set: cardFace(nGate, "K", "♥", () => mix(FLARE, PAPER, Math.random() * 0.25), dim), x: 0.47, y: -0.03, z: 0, rot: -0.1, k: 0.58 },
+    { set: cardFace(nMid, "7", "♦", () => mix(SUN, FLARE, Math.random() * 0.45), () => mix(DEEP, SUN, 0.12 + Math.random() * 0.18)), x: 0, y: 0.08, z: 0.1, rot: 0, k: 0.6 },
+  ];
+  const pos = new Float32Array(N * 3),
+    col = new Float32Array(N * 3);
+  let o = 0;
+  for (const c of cards) {
+    const n = c.set.pos.length / 3,
+      cs = Math.cos(c.rot),
+      sn = Math.sin(c.rot);
+    for (let i = 0; i < n; i++) {
+      const x = c.set.pos[i * 3] * c.k,
+        y = c.set.pos[i * 3 + 1] * c.k;
+      pos[(o + i) * 3] = c.x + x * cs - y * sn;
+      pos[(o + i) * 3 + 1] = c.y + x * sn + y * cs;
+      pos[(o + i) * 3 + 2] = c.z + c.set.pos[i * 3 + 2];
+    }
+    col.set(c.set.col, o * 3);
+    o += n;
+  }
+  return { pos, col };
+}
+
 // Journey: a helix climbing through five bright nodes, one per team
 export function helix(N) {
   const turns = 2.2,
@@ -484,7 +558,9 @@ export function portrait(N, img, [gx0, gx1, gy0, gy1], rows = 96, name) {
       ]);
     }
   // equalise: a cell's tone is its rank, so the face uses the full glyph range
-  const order = cells.map((_, i) => i).sort((a, b) => cells[a][2] - cells[b][2]);
+  const order = cells
+    .map((_, i) => i)
+    .sort((a, b) => cells[a][2] - cells[b][2]);
   const rank = new Float32Array(cells.length);
   order.forEach((ci, r) => {
     rank[ci] = r / Math.max(1, cells.length - 1);
@@ -519,7 +595,10 @@ export function portrait(N, img, [gx0, gx1, gy0, gy1], rows = 96, name) {
       [px, py, dome + (t - 0.5) * 0.04],
       warm.map((v) => v * (0.38 + t * 0.85) * fade),
       // the darkest cells stay empty: eyes, brows and hair shadow read as negative space
-      [Math.min(15, Math.round(t * 15)), fade < 0.05 || t < 0.07 ? 0 : pitch * 1.1],
+      [
+        Math.min(15, Math.round(t * 15)),
+        fade < 0.05 || t < 0.07 ? 0 : pitch * 1.1,
+      ],
     );
   }
 
@@ -554,7 +633,12 @@ export function portrait(N, img, [gx0, gx1, gy0, gy1], rows = 96, name) {
       y = gy1 - gy * step;
     const shade = 0.34 + Math.random() * 0.06;
     // look.x = -2 marks an even grid dot; spares past the grid rest at zero size
-    put(n + m + j, [x, y, -0.06], [shade, shade * 0.97, shade * 0.94], [-2, y < gy0 ? 0 : 2.2]);
+    put(
+      n + m + j,
+      [x, y, -0.06],
+      [shade, shade * 0.97, shade * 0.94],
+      [-2, y < gy0 ? 0 : 2.2],
+    );
   }
   return { pos, col, look };
 }

@@ -223,7 +223,7 @@ h1 em { font-style: normal; color: var(--sun); }
 .tier-0 .noise { display: none; }
 
 /* OPEN-TRACE BUTTONS */
-.open-trace { justify-self: start; display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; border-radius: 10px; cursor: pointer;
+.open-trace { text-decoration: none; justify-self: start; display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; border-radius: 10px; cursor: pointer;
   border: 1px solid rgb(255 181 71 / .4); background: var(--sun-wash); color: var(--sun); font: 500 13px var(--mono); letter-spacing: .02em;
   transition: background-color .2s ease, color .2s ease, transform .16s var(--out); }
 .open-trace span { transition: transform .3s var(--out); }

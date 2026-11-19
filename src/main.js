@@ -13,6 +13,7 @@ import {
   retrieval,
   orbit,
   shield,
+  cardHand,
   helix,
   seed,
   portrait,
@@ -167,6 +168,12 @@ const CHAPTERS = [
     turn: "face",
   },
   {
+    tint: "#2a0d14",
+    size: () => (narrow ? view.w * 0.62 : Math.min(view.h * 0.72, view.w * 0.34)),
+    at: () => beside(6, 0.22),
+    turn: "card",
+  },
+  {
     tint: "#16203a",
     size: () => (narrow ? view.w * 0.7 : view.h * 0.86),
     at: () => (narrow ? [0, view.h * 0.26] : [view.w * 0.25, view.h * 0.02]),
@@ -212,6 +219,10 @@ function turnFor(kind, t, out) {
       break;
     case "cage":
       euler.set(0.22 + my * 0.1, T * 0.3 + mx * 0.3, 0);
+      break;
+        // the card faces the viewer and only sways, so it never turns edge-on
+    case "card":
+      euler.set(my * 0.18, mx * 0.45 + Math.sin(T * 0.5) * 0.22, Math.sin(T * 0.3) * 0.03);
       break;
     case "orbit":
       euler.set(0.45 + my * 0.12, T * 0.18 + mx * 0.3, -0.12);
@@ -285,7 +296,16 @@ const traces = createTraces({
     }
     focus.to = scene;
     focus.on = true;
-    gsap.fromTo(focus, { t: 0 }, { t: 1, duration: reduce ? 0 : 1.8, ease: "power2.inOut", overwrite: true });
+    gsap.fromTo(
+      focus,
+      { t: 0 },
+      {
+        t: 1,
+        duration: reduce ? 0 : 1.8,
+        ease: "power2.inOut",
+        overwrite: true,
+      },
+    );
   },
   onClose() {
     // reverse from the chapter in view back out to the panel-side shape
@@ -497,6 +517,7 @@ Promise.all([fontsReady, minimumShow, photo]).then(([, , img]) => {
     retrieval(COUNT),
     orbit(COUNT),
     shield(COUNT),
+    cardHand(COUNT),
     helix(COUNT),
     words(COUNT, "HELLO"),
   ];
@@ -654,7 +675,11 @@ function heroIn() {
       { y: -30, opacity: 0 },
       { y: 0, opacity: 1, duration: 1, ease: EASE },
     )
-    .from(".hero-name", { opacity: 0, y: 14, duration: 0.9, ease: EASE }, "<.05")
+    .from(
+      ".hero-name",
+      { opacity: 0, y: 14, duration: 0.9, ease: EASE },
+      "<.05",
+    )
     .add(() => decode($(".hero .eyebrow")), "<")
     .from(
       ".hero .w > span",

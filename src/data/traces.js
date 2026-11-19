@@ -209,8 +209,53 @@ export const TRACES = [
     stack: ["Java", "AWS SQS", "SNS", "CloudWatch", "DynamoDB", "EC2", "Lambda", "S3", "IAM", "CloudFormation", "VPC"],
   },
   {
-    id: "delhivery",
+    id: "showdown",
     scene: 6,
+    run: "personal/showdown",
+    title: "ShowDown: real-time poker variants for friends and family",
+    role: "Personal project",
+    org: "ShowDown",
+    when: "Jan 2026 – Present",
+    where: "pokergames.vercel.app",
+    summary: "A free, real-time multiplayer card platform for private groups. 2 to 8 players join a room by code and play with virtual chips only: no real money, just bragging rights and a shared pool. Live on the web, with a React Native mobile app on the same server",
+    brief: [
+      ["The idea", "Card nights with friends and family, without anyone handling real money. Everyone gets a persistent virtual wallet, a daily bonus and stats per game, and the table settles itself"],
+      ["The games", "In-Between, where you bet the third card lands between two gate cards. Twenty One, where the closest to 21 takes the shared pool. Seven Star, a rummy-style shedding game with a joker rank, +2 chains, a show at five points or less, elimination at 100 and a 70/30 final split"],
+      ["What made it hard", "Every player is on their own device and connection, so the server has to be the only source of truth: who is in which seat, whose turn it is, what every wallet holds, and what happens when someone's phone drops mid-hand"],
+      ["Where it is now", "Live and in active development, with rule refinements in progress. Every change runs through 497 server tests and 198 mobile tests, and the live deployment passes a 48-check smoke test"],
+    ],
+    metrics: [["497", "", "server tests across 26 suites"], ["198", "", "mobile tests"], ["48", "/48", "live smoke checks passing"], ["62", "k", "lines of TypeScript, tests included", "~"]],
+    stages: [
+      { name: "Play", items: [
+        ["result", "Built [[3]] games, In-Between, Twenty One and Seven Star, for [[2–8]] players in private rooms joined by room code, with host start, vote-to-end and in-app rulebooks"],
+        ["result", "Added guest play or Google sign-in, a persistent virtual wallet, per-game stats, profile and avatar editing, and account deletion"],
+      ] },
+      { name: "Trust the server", items: [
+        ["infra", "Made game state server-authoritative: every socket is bound to a verified player at connect time, and any payload naming another player is rejected, closing seat takeover and impersonation"],
+        ["quality", "Names and wallets always come from the database, never the client, and room creation is rate-limited per player"],
+      ] },
+      { name: "Keep the chips right", items: [
+        ["infra", "Persisted every chip change as an atomic delta (balance plus delta, clamped at zero) instead of an absolute snapshot, so a second game or a mid-game daily bonus can never overwrite a balance"],
+        ["quality", "Tests assert chip conservation: the sum of all wallets plus the pool stays constant through every hand"],
+        ["infra", "Made the daily bonus a single conditional UPDATE, so a double claim is impossible, on a rolling 24-hour timer with a streak kept inside a 48-hour grace window"],
+      ] },
+      { name: "Stay in the game", items: [
+        ["infra", "Kept seats through a reconnect grace window, re-synced full state on rejoin, and ran turn timers on the server so a dropped phone can't stall the table"],
+      ] },
+      { name: "Sign in and lock down", items: [
+        ["infra", "Migrated auth from AWS Cognito to Google sign-in with server-verified ID tokens and the platform's own 30-day session tokens, across server, web and mobile"],
+        ["quality", "Hardened the deployment with CSP and security headers, no public source maps, body-size limits, proxy-aware rate limiting and ownership checks on every player endpoint"],
+      ] },
+      { name: "Test and ship", items: [
+        ["quality", "[[497]] server tests in [[26]] suites, including end-to-end socket tests and bot simulations at 2 to 8 players, plus [[198]] mobile tests"],
+        ["ops", "Web on Vercel, server on Render, PostgreSQL on Neon in production and SQLite locally, Sentry on server and web, and a [[48/48]] smoke test against the live deployment"],
+      ] },
+    ],
+    stack: ["TypeScript", "NestJS", "Socket.IO", "React", "Vite", "React Native", "Expo", "PostgreSQL", "SQLite", "Google sign-in + JWT", "Vercel", "Render", "Sentry"],
+  },
+  {
+    id: "delhivery",
+    scene: 7,
     run: "delhivery/wms",
     title: "Where it started: warehouse systems",
     role: "Software Developer",
@@ -229,7 +274,7 @@ export const TRACES = [
   },
   {
     id: "record",
-    scene: 6,
+    scene: 7,
     run: "anits/record",
     title: "The competitive record",
     role: "B.Tech, Computer Science and Engineering",

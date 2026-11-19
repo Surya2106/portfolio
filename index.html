@@ -33,10 +33,11 @@
     </div>
     <ol class="loader-log" id="loadLog">
       <li data-at="0.06">ai estimation platform <b>−60% manual effort</b></li>
-      <li data-at="0.24">structural drawings <b>~80 of 90 at 95%+</b></li>
-      <li data-at="0.44">d.e. shaw qa assistant <b>−45% response time</b></li>
-      <li data-at="0.62">tekion integrations <b>1 month → 3 days</b></li>
-      <li data-at="0.8">amazon buyer risk <b>+16% automation</b></li>
+      <li data-at="0.21">structural drawings <b>~80 of 90 at 95%+</b></li>
+      <li data-at="0.36">d.e. shaw qa assistant <b>−45% response time</b></li>
+      <li data-at="0.51">tekion integrations <b>1 month → 3 days</b></li>
+      <li data-at="0.66">amazon buyer risk <b>+16% automation</b></li>
+      <li data-at="0.81">showdown, personal <b>497 tests, live</b></li>
       <li data-at="0.96">acm-icpc national finalist <b>2018, 2019</b></li>
     </ol>
   </div>
@@ -65,6 +66,7 @@
   <a href="#work-desk"><span>D.E. Shaw</span></a>
   <a href="#work-tekion"><span>Tekion</span></a>
   <a href="#work-amazon"><span>Amazon</span></a>
+  <a href="#work-showdown"><span>ShowDown</span></a>
   <a href="#journey"><span>Journey</span></a>
   <a href="#contact"><span>Contact</span></a>
 </nav>
@@ -176,8 +178,30 @@
     </article>
   </section>
 
-  <!-- 6 · journey -->
-  <section class="chapter journey" id="journey" data-scene="6" aria-labelledby="journey-h">
+  <!-- 6 · ShowDown, personal project -->
+  <section class="chapter work" id="work-showdown" data-scene="6" data-side="right" aria-labelledby="show-h">
+    <article class="card">
+      <p class="kicker decode">Personal project · Real-time multiplayer · Live</p>
+      <h2 id="show-h" class="words">ShowDown: poker nights for friends and family</h2>
+      <p>No real money, just bragging rights and a shared pool. I built a real-time card platform where 2 to 8 friends join a private room by code and play In-Between, Twenty One or Seven Star with virtual chips, on the web or on a phone. The server owns every card, turn and chip, so nobody can take someone else's seat or rewrite their wallet</p>
+      <dl class="stats6">
+        <div><dt>Games</dt><dd data-count="3">0</dd></div>
+        <div><dt>Players a room</dt><dd>2–<span data-count="8">0</span></dd></div>
+        <div><dt>Server tests</dt><dd data-count="497">0</dd></div>
+        <div><dt>Mobile tests</dt><dd data-count="198">0</dd></div>
+        <div><dt>Live smoke checks</dt><dd><span data-count="48">0</span>/48</dd></div>
+        <div><dt>Lines of TypeScript</dt><dd>~<span data-count="62" data-suffix="k">0</span></dd></div>
+      </dl>
+      <ul class="tags">
+        <li>Server-authoritative game state</li><li>Atomic wallet deltas</li><li>Reconnect grace window</li><li>Web + mobile app</li>
+      </ul>
+      <p class="stack">NestJS · Socket.IO · React + Vite · React Native / Expo · PostgreSQL · Vercel + Render</p>
+      <p class="role-traces"><button class="open-trace" type="button" data-trace="showdown">Open the full trace <span aria-hidden="true">↗</span></button> <a class="open-trace" href="https://pokergames.vercel.app" target="_blank" rel="noopener">Play it live <span aria-hidden="true">↗</span></a></p>
+    </article>
+  </section>
+
+  <!-- 7 · journey -->
+  <section class="chapter journey" id="journey" data-scene="7" aria-labelledby="journey-h">
     <h2 id="journey-h" class="huge words">Six years, five systems</h2>
     <p class="lede">From warehouse software to AI agents. Each team taught me something the next one needed</p>
     <div class="timeline">
@@ -194,8 +218,8 @@
     </div></div>
   </section>
 
-  <!-- 7 · contact -->
-  <section class="chapter contact" id="contact" data-scene="7" aria-labelledby="contact-h">
+  <!-- 8 · contact -->
+  <section class="chapter contact" id="contact" data-scene="8" aria-labelledby="contact-h">
     <div class="contact-inner">
       <h2 id="contact-h" class="words">Building something that's missing?</h2>
       <p class="lede">Open to senior AI and backend engineering roles. I also mentor engineers one-on-one on <a href="https://topmate.io/surya_teja_pinninti" target="_blank" rel="noopener">Topmate</a></p>
